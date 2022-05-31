@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
@@ -51,7 +51,20 @@ class Board extends React.Component {
   render() {
     return (
       <div>
-        <div className="board-row">
+        {Array(3)
+          .fill(0)
+          .map((row, i) => {
+            return (
+              <div className="board-row" key={row + i}>
+                {Array(3)
+                  .fill(0)
+                  .map((col, j) => {
+                    return this.renderSquare(i * 3 + j);
+                  })}
+              </div>
+            );
+          })}
+        {/* <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
           {this.renderSquare(2)}
@@ -65,7 +78,7 @@ class Board extends React.Component {
           {this.renderSquare(6)}
           {this.renderSquare(7)}
           {this.renderSquare(8)}
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -79,6 +92,7 @@ class Game extends React.Component {
       stepNumber: 0,
       xIsNext: true,
       cellArray: [],
+      order: "desc",
     };
   }
 
@@ -135,8 +149,7 @@ class Game extends React.Component {
 
     const moves = history.map((step, move) => {
       const desc = move
-        ? // ? "Go to move #" + move
-          "Go to move #" +
+        ? "Go to move #" +
           move +
           `(col: ${cellArray[move - 1][0]}, row: ${cellArray[move - 1][1]})`
         : "Go to game start";
@@ -152,6 +165,12 @@ class Game extends React.Component {
         </li>
       );
     });
+    let order = this.state.order;
+    const reverseOrder = () => {
+      order === "desc"
+        ? this.setState({ order: "ASC" })
+        : this.setState({ order: "desc" });
+    };
     let status;
     if (winner) {
       status = "Winner: " + winner;
@@ -168,7 +187,8 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <button onClick={() => reverseOrder()}>{this.state.order}</button>
+          <ol>{order === "desc" ? moves : moves.reverse()}</ol>
         </div>
       </div>
     );
