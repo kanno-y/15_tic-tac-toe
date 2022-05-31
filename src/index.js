@@ -162,6 +162,8 @@ class Game extends React.Component {
     if (winner) {
       status = "Winner: " + winner[0];
       highlightArr = winner[1];
+    } else if (this.state.stepNumber === 9) {
+      status = "引き分け";
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
