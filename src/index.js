@@ -99,7 +99,7 @@ class Game extends React.Component {
   jumpTo(step) {
     this.setState({
       stepNumber: step,
-      xIsNext: (step % 2) === 0,
+      xIsNext: step % 2 === 0,
     });
   }
 
@@ -112,7 +112,13 @@ class Game extends React.Component {
       const desc = move ? "Go to move #" + move : "Go to game start";
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          {this.state.stepNumber === move ? (
+            <button className="bold" onClick={() => this.jumpTo(move)}>
+              {desc}
+            </button>
+          ) : (
+            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          )}
         </li>
       );
     });
