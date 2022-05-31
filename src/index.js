@@ -14,36 +14,37 @@ import "./index.css";
 
 // Squareを関数コンポーネントに書き換える
 function Square(props) {
+  // console.log(props.isHighlight);
   return (
-    <button className="square" onClick={props.onClick}>
-      {props.value}
-    </button>
+    <>
+      {props.isHighlight ? (
+        <button className="square highlight" onClick={props.onClick}>
+          {props.value}
+        </button>
+      ) : (
+        <button className="square" onClick={props.onClick}>
+          {props.value}
+        </button>
+      )}
+    </>
   );
 }
 
 class Board extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     squares: Array(9).fill(null),
-  //     xIsNext: true,
-  //   };
-  // }
-
-  // handleClick(i) {
-  //   const squares = this.state.squares.slice();
-  //   if (calculateWinner(squares) || squares[i]) {
-  //     return;
-  //   }
-  //   squares[i] = this.state.xIsNext ? "X" : "O";
-  //   this.setState({ squares: squares, xIsNext: !this.state.xIsNext });
-  // }
+  constructor(props) {
+    super(props);
+  }
 
   renderSquare(i) {
+    let isHighlight = false;
+    if (this.props.highlightArr) {
+      isHighlight = this.props.highlightArr.includes(i);
+    }
     return (
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        isHighlight={isHighlight}
       />
     );
   }
@@ -64,21 +65,6 @@ class Board extends React.Component {
               </div>
             );
           })}
-        {/* <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div> */}
       </div>
     );
   }
@@ -172,8 +158,10 @@ class Game extends React.Component {
         : this.setState({ order: "desc" });
     };
     let status;
+    let highlightArr;
     if (winner) {
-      status = "Winner: " + winner;
+      status = "Winner: " + winner[0];
+      highlightArr = winner[1];
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
@@ -183,6 +171,7 @@ class Game extends React.Component {
           <Board
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
+            highlightArr={highlightArr}
           />
         </div>
         <div className="game-info">
@@ -214,8 +203,8 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return [squares[a], [a, b, c]];
     }
   }
-  return null;
+  return;
 }
